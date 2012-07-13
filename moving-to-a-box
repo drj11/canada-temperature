@@ -28,4 +28,5 @@ that my source file had a non-ASCII character and the encoding wasn't
 specified ("Rivière du Lou" appears in a comment).
 Fixed by adding "coding: utf-8" to the second line.
 
-Hmm.  Another missing table.
+Hmm.  Another missing table.  I don't really want to move the sqlite data,
+but it might be nice to move the metadata.
