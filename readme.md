@@ -5,7 +5,7 @@ There are two scripts to do the scraping: `weather-stations`, and
 
 `weather-stations` makes a list of weather stations (in the table *station*).
 It is indexed by the StationID used in the web user interface.  See for example,
-[this one](http://www.climate.weatheroffice.gc.ca/climateData/monthlydata_e.html?timeframe=3&Prov=XX&StationID=10813&Year=2010&Month=10&Day=25).
+[this one](http://www.climate.weatheroffice.gc.ca/climateData/monthlydata_e.html?timeframe=3&Prov=XX&StationID=10813&Year=2007&Month=10&Day=25).
 Almost no useful metadata is scraped (because it's not on web pages).
 
 `canada-temperature-data` is a much longer process of scraping data
