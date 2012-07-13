@@ -36,3 +36,8 @@ and joined to it (though the reason that doesn't work is that the box
 doesn't have wget).  That will be okay without attach in the future, because
 all the scrapers will be running in the same box (so can either write to the
 same database, or share a database file via the filesystem).
+
+Hmm.  Should my login script automatically do a ". bin/activate" ?
+
+Did in fact, make it so that two scrapers (scripts) share a database and use
+different tables within it.  Makes JOINing easy.
