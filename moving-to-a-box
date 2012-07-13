@@ -30,3 +30,9 @@ Fixed by adding "coding: utf-8" to the second line.
 
 Hmm.  Another missing table.  I don't really want to move the sqlite data,
 but it might be nice to move the metadata.
+
+Oh noo.  My next problem is that I've actually attached to another datbase
+and joined to it (though the reason that doesn't work is that the box
+doesn't have wget).  That will be okay without attach in the future, because
+all the scrapers will be running in the same box (so can either write to the
+same database, or share a database file via the filesystem).
