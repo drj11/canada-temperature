@@ -1,0 +1,31 @@
+2012-07-13
+drj@climatecode.org
+David Jones, Climate Code Foundation
+
+From ScraperWiki.com to a databox
+
+
+Fun with converting my slightly complicated and large Canada Temperature
+Data project from ScraperWiki.com to a databox.
+
+Had to pip install scraperwiki_local (and dumptruck which wasn't correctly
+in the python-reqs.txt).  Had a bug.  fixed it.
+
+Had to change my scraper because it relied on the swdata table already
+existing.  But then it worked.
+
+Used curl to get the source code from scraperwiki.com into my box.  That
+was fun.
+
+Put it all on git.  Had to create a new github repo which is always a pain.
+Then had to copy the ssh private key that I use for github onto my box.
+Because I ssh into my box to work on it, and want to push to githb from there.
+
+That was just the simple "find all the stations" scraper.
+
+Next is the data scraper.  Had to fix an encoding issue.  Python complained
+that my source file had a non-ASCII character and the encoding wasn't
+specified ("Rivière du Lou" appears in a comment).
+Fixed by adding "coding: utf-8" to the second line.
+
+Hmm.  Another missing table.
