@@ -44,4 +44,7 @@ different tables within it.  Makes JOINing easy.
 
 Using python "import pdb" to debug a problem.  So glad I can do that.
 
-Now my scraper is running, I'm really missing the data preview.  Even though it was bit rubbish for seeing how my scrape is going.
+Now my scraper is running, I'm really missing the data preview.
+Even though it was bit rubbish for seeing how my scrape is
+going.  Also, the scraperwiki API was okay for making other
+simple visualisation which were useful for viewing progress.
