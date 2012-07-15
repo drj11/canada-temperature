@@ -21,11 +21,11 @@ url="http://www.climate.weatheroffice.gc.ca/advanceSearch/searchHistoricDataStat
 
 # bootstrap
 scraperwiki.sqlite.execute("""
-  Create table if not exists swdata (webid,name,hlyRange,dlyRange,mlyRange)
+  Create table if not exists station (webid,name,hlyRange,dlyRange,mlyRange)
   """)
 # Create a view that shows extra daily data on left (l) and right (r) of station record.
 scraperwiki.sqlite.execute("""Create view if not exists missing_days as
-select webid,d,m,julianday(substr(m,1,10))-julianday(substr(d,1,10)) as l,julianday(substr(d,12))-julianday(substr(m,12)) as r from (select mlyRange as m,dlyRange as d,webid from swdata)
+select webid,d,m,julianday(substr(m,1,10))-julianday(substr(d,1,10)) as l,julianday(substr(d,12))-julianday(substr(m,12)) as r from (select mlyRange as m,dlyRange as d,webid from station)
 """)
 
 scraperwiki.sqlite.commit()
@@ -53,7 +53,7 @@ def scrapesoup(soup):
                 key = s['name']
                 v = iso_date_range(s['value'])
                 d[key] = v
-        scraperwiki.sqlite.save(['webid'], d)
+        scraperwiki.sqlite.save(['webid'], d, table_name='station')
         count +=1
     return count
 
@@ -79,7 +79,7 @@ def scrapere(s):
             if key == 'StationID':
                 key = 'webid'
             d[key] = value
-        scraperwiki.sqlite.save(['webid'], d)
+        scraperwiki.sqlite.save(['webid'], d, table_name='station')
         count += 1
     return count        
 
