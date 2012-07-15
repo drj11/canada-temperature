@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding: utf-8
 # Scrape climate data from Environment Canada
 # David Jones, Climate Code Foundation, 2011-09
 
@@ -49,6 +51,9 @@ create table if not exists obs
 scraperwiki.sqlite.execute("""
 create index if not exists obs_id on obs(id)
 """)
+scraperwiki.sqlite.execute("""
+create table if not exists meta (id, `Station Name`, `WMO Identifier`, Latitude, Longitude, touched, webid, source, Province, Elevation, `Climate Identifier`, `TC Identifier`, element, session, rowmin, rowmax, clocked, clockedsave)
+""")
 # To optimise the "show me stations with more than 20 years on tmeanM obs" query:
 # select * from (select id,count(*) as n from obs where element='tmeanM' group by id) where n >= 240;
 scraperwiki.sqlite.execute("""
@@ -69,10 +74,6 @@ delete from series where id = "<built-in function id>"
 """)
 if 0: scraperwiki.sqlite.execute("""
 drop table meta
-""")
-if 0: scraperwiki.sqlite.execute("""
-create table meta as select id, `Station Name`, `WMO Identifier`, Latitude, Longitude, touched, webid, source, Province, Elevation, `Climate Identifier`, `TC Identifier`, element, null as session, rowmin, rowmax, clocked, clockedsave
-from metacopy
 """)
 if 0: scraperwiki.sqlite.execute("""drop table metacopy""")
 scraperwiki.sqlite.commit()
@@ -282,10 +283,9 @@ def days_ago(webid):
     ago = (todaydt - touched).days
     return ago
 
-scraperwiki.sqlite.attach('can-weather-stations', 's')
 missing_data = scraperwiki.sqlite.select("""
 webid,julianday(mmax)-julianday(rmax) as r,julianday(rmin)-julianday(mmin) as l from
-(select s.swdata.webid as webid,substr(s.swdata.mlyRange,1,10) as mmin,substr(s.swdata.mlyRange,12) as mmax, meta.rowmin||"-01" as rmin,meta.rowmax||"-01" as rmax from s.swdata join meta on meta.webid = s.swdata.webid and meta.element = 'meta')
+(select station.webid as webid,substr(station.mlyRange,1,10) as mmin,substr(station.mlyRange,12) as mmax, meta.rowmin||"-01" as rmin,meta.rowmax||"-01" as rmax from station join meta on meta.webid = station.webid and meta.element = 'meta')
 """)
 # Gives the number of missing days (!) for each station.
 missing_dict = dict((r['webid'],max(0,r['l'])+max(0,r['r'])) for r in missing_data)
@@ -343,16 +343,14 @@ def prioritise(station):
 # Just so that we get a nice screenshot on ScraperWiki
 urllib.urlopen("http://www.climate.weatheroffice.gc.ca/climateData/canada_e.html")
 
-def all_stations_from(db):
-    """Yield a stream of all the results from the specified
-    sqlite database."""
+def all_stations():
+    """Yield a stream of all the stations.
+    """
 
-    print db
-    scraperwiki.sqlite.attach(db, 'meta')
-    for row in scraperwiki.sqlite.select("* from meta.swdata;"):
+    for row in scraperwiki.sqlite.select("* from station;"):
         yield row
 
-stations = list(all_stations_from(stations_db))
+stations = list(all_stations())
 stations = [item for item in stations if item.get('webid')]
 import random
 random.shuffle(stations)
