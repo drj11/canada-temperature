@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+# tov3inv
+
+"""Convert to GHCN-M v3 format.
+For details of output format, see
+ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3/README
+"""
+
+import itertools
+import sqlite3
+import sys
+
+def convert(dbname, out=sys.stdout):
+    co = sqlite3.connect(dbname)
+    cu = co.cursor()
+    cu.execute("""
+      select id,`Station Name`, Latitude, Longitude, Elevation
+      from meta where element='meta'
+      """)
+    for id,name,lat,lon,elev in cu:
+        lat,lon = map(float, [lat,lon])
+        try:
+            elev = float(elev)
+        except ValueError:
+            elev = -999
+        line = (('%(id)-11.11s %(lat)8.4f %(lon)9.4f %(elev)6.1f ' +
+          '%(name)-30.30s -999 _ -999XXXXXX-9X-9XABCABCABCABCABCX\n') %
+          locals())
+        out.write(line)
+        assert line[11] == ' '
+        assert line[20] == ' '
+        assert line[30] == ' '
+        assert line[37] == ' '
+        assert line[68] == ' '
+
+def main():
+    db = 'finished-scraperwiki.db'
+    convert(db)
+
+if __name__ == '__main__':
+    main()

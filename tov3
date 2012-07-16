@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+# tov3
+
+"""Convert to GHCN-M v3 format.
+For details of output format, see
+ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3/README
+"""
+
+import itertools
+import sqlite3
+import sys
+
+def convert(dbname, out=sys.stdout):
+    co = sqlite3.connect(dbname)
+    cu = co.cursor()
+    cu.execute("""select id,year,month,v,f from obs
+      where element='tmeanM' order by id,year,month""")
+    # *obs* has one row per month, group so that we have
+    # all the months for one station--year together.
+    for g,rows in itertools.groupby(cu, lambda row: row[:2]):
+        id,year = g
+        m = [-9999]*12
+        for row in rows:
+            m[row[2]-1] = int(round(float(row[3])*100))
+        # ignoring flags
+        ms = ''.join('%5d   ' % i for i in m)
+        assert 96 == len(ms)
+        line = '%-11.11s%4dTAVG%s\n' % (id, year, ms)
+        out.write(line)
+
+def fixie(dbname, out=sys.stdout):
+    co = sqlite3.connect(dbname)
+    cu = co.cursor()
+    cu.execute("""select id,year,month,v,f from
+      (select id,element,year,month,v,f from obs
+       order by id,element,year,month) where element='tmeanM'""")
+    # *obs* has one row per month, group so that we have
+    # all the months for one station--year together.
+    for g,rows in itertools.groupby(cu, lambda row: row[:2]):
+        id,year = g
+        m = [-9999]*12
+        for row in rows:
+            m[row[2]-1] = int(round(float(row[3])*100))
+        # ignoring flags
+        ms = ''.join('%5d   ' % i for i in m)
+        assert 96 == len(ms)
+        line = '%-11.11s%4dTAVG%s\n' % (id, year, ms)
+        out.write(line)
+
+
+def main():
+    db = 'finished-scraperwiki.db'
+    fixie(db)
+
+if __name__ == '__main__':
+    main()
