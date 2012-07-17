@@ -36,6 +36,7 @@ import re
 import time
 # http://docs.python.org/release/2.6.6/library/urllib.html
 import urllib
+import urllib2
 
 import scraperwiki
 
@@ -309,10 +310,11 @@ def scrapelist(stations):
         station['priority'] = prioritise(station)
     stations.sort(key=lambda x: x['priority'], reverse=True)
     for station in stations:
-        print isotime(), station['webid'], station['ago'], station['priority']
+        print isotime(), dict(webid=station['webid'],
+          ago=station['ago'], priority=station['priority'])
         webid = station['webid']
         url = url_template % webid
-        csvfile = csv.reader(urllib.urlopen(url))
+        csvfile = csv.reader(urllib2.urlopen(url))
         scrape1csv(csvfile, source=url, webid=webid)
 
 def prioritise(station):
